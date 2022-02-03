@@ -8,7 +8,8 @@ in
   home.username = "sebastian";
   home.homeDirectory = "/home/sebastian";
 
-  home.packages = packages pkgs;
+  # TODO: uncomment when switching to NixOS
+  # home.packages = packages pkgs;
 
   # determines the home manager release that the configuration is compatible
   home.stateVersion = "22.05";
