@@ -5,57 +5,57 @@
   home.username = "sebastian";
   home.homeDirectory = "/home/sebastian";
 
-  home.packages = [
+  home.packages = with pkgs; [
     # llvm
-    pkgs.llvmPackages_13.llvm
-    pkgs.clang_13
-    pkgs.clang-tools
-    pkgs.lld_13
-    pkgs.lldb
+    llvmPackages_13.llvm
+    clang_13
+    clang-tools
+    lld_13
+    lldb
     # development
-    pkgs.git
-    pkgs.git-lfs
-    pkgs.tk
-    pkgs.cmake
-    pkgs.cppcheck
-    pkgs.gdb
-    pkgs.ninja
-    pkgs.meld
-    pkgs.sumneko-lua-language-server
+    git
+    git-lfs
+    tk
+    cmake
+    cppcheck
+    gdb
+    ninja
+    meld
+    sumneko-lua-language-server
     # Qt/QML development
-    pkgs.qtcreator
+    qtcreator
     # music
-    pkgs.mpd
-    pkgs.mpc-cli
+    mpd
+    mpc-cli
     # commandline
-    pkgs.alacritty
-    pkgs.tmux
-    pkgs.neovim
-    pkgs.ranger
-    pkgs.tig
-    pkgs.htop
-    pkgs.fzf
-    pkgs.ripgrep
-    pkgs.fd
-    pkgs.exa
-    pkgs.jq
-    pkgs.codespell
+    alacritty
+    tmux
+    neovim
+    ranger
+    tig
+    htop
+    fzf
+    ripgrep
+    fd
+    exa
+    jq
+    codespell
     # style
-    pkgs.libsForQt5.qt5ct
-    pkgs.papirus-icon-theme
+    libsForQt5.qt5ct
+    papirus-icon-theme
     # graphics & design
-    pkgs.scribusUnstable
-    pkgs.krita
-    pkgs.gmic-qt-krita
-    pkgs.inkscape
+    scribusUnstable
+    krita
+    gmic-qt-krita
+    inkscape
     # browser
-    pkgs.firefox
+    firefox
     # other
-    pkgs.transmission-qt
-    pkgs.mpv
-    pkgs.imv
-    pkgs.mupdf
-    pkgs.android-file-transfer
+    transmission-qt
+    mpv
+    imv
+    mupdf
+    android-file-transfer
   ];
 
   # determines the home manager release that the configuration is compatible
