@@ -11,6 +11,10 @@ in
   # TODO: uncomment when switching to NixOS
   # home.packages = packages pkgs;
 
+  imports = [
+    ./xdg.nix
+  ];
+
   # determines the home manager release that the configuration is compatible
   home.stateVersion = "22.05";
 
