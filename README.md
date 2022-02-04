@@ -1,4 +1,4 @@
-# dotfiles
+# nixconf - nix-based configurations
 
 This repository holds my personal configurations and scripts for Linux.
 

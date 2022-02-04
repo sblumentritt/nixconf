@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 
 let
-  packages = import ./packages.nix;
+  packages = import ./core/packages.nix;
 in
 {
   # provide required information
@@ -12,7 +12,7 @@ in
   # home.packages = packages pkgs;
 
   imports = [
-    ./xdg.nix
+    ./core/xdg.nix
   ];
 
   # determines the home manager release that the configuration is compatible
