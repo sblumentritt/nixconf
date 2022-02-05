@@ -97,13 +97,6 @@ pkgs: with pkgs; [
     # style
     libsForQt5.qt5ct
     papirus-icon-theme
-    # fonts
-    lato
-    source-code-pro
-    source-han-code-jp
-    roboto
-    roboto-mono
-    noto-fonts-emoji
     # graphics & design
     scribusUnstable
     krita
