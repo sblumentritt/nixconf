@@ -6,6 +6,10 @@
       enable = true;
       autorun = false;
 
+      # to avoid any strange problems
+      # (https://github.com/NixOS/nixpkgs/issues/19629#issuecomment-368121456)
+      exportConfiguration = true;
+
       # only use a TTY login prompt instead of the default 'lightdm'
       displayManager.startx.enable = true;
 
