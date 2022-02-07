@@ -7,11 +7,14 @@
   ];
 
   nix = {
-    useSandbox = true;
-    autoOptimiseStore = true;
-    allowedUsers = [ "@wheel" ];
-    trustedUsers = [ "@wheel" ];
     extraOptions = "experimental-features = nix-command flakes";
+
+    settings = {
+      sandbox = true;
+      auto-optimise-store = true;
+      allowed-users = [ "@wheel" ];
+      trusted-users = [ "@wheel" ];
+    };
 
     gc = {
       automatic = true;
