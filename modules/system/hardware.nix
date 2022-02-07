@@ -8,8 +8,11 @@ let
 in
 {
   boot = {
-    cleanTmpDir = true;
     kernelPackages = pkgs.linuxPackages_latest;
+    kernelParams = [ "boot.shell_on_fail" ];
+
+    tmpOnTmpfs = true;
+    # cleanTmpDir = true;
 
     loader = {
       grub = {
@@ -23,8 +26,8 @@ in
         # with 'unusual large core.img' and 'btrfs doesn't support blocklists'
         device = "nodev";
 
-        extraConfig = ''GRUB_CMDLINE_LINUX="cryptdevice=LABEL=${root_crypt_name}"'';
-        extraGrubInstallArgs = [ "--bootloader-id=test" ];
+        # extraConfig = ''GRUB_CMDLINE_LINUX="cryptdevice=LABEL=${root_crypt_name}"'';
+        extraGrubInstallArgs = [ "--bootloader-id=grub-test" ];
       };
 
       efi.efiSysMountPoint = "/efi";
@@ -33,10 +36,11 @@ in
     initrd = {
       supportedFilesystems = [ "btrfs" ];
 
+      luks.reusePassphrases = true;
       luks.devices = {
         "${root_crypt_name}" = {
           device = "${disk_path_prefix}/root";
-          keyFile = "${root_crypt_name}_keyfile.bin";
+          # keyFile = "${root_crypt_name}_keyfile.bin";
           fallbackToPassword = true;
           # should improve performance on SSDs, needs Linux >= 5.9
           bypassWorkqueues = true;
@@ -44,7 +48,7 @@ in
 
         "${boot_crypt_name}" = {
           device = "${disk_path_prefix}/boot";
-          keyFile = "${boot_crypt_name}_keyfile.bin";
+          # keyFile = "${boot_crypt_name}_keyfile.bin";
           fallbackToPassword = true;
           # should improve performance on SSDs, needs Linux >= 5.9
           bypassWorkqueues = true;
@@ -62,7 +66,7 @@ in
         "compress=zstd"
         "space_cache"
         "commit=120"
-        "subvol=/test/root"
+        "subvol=test/root"
       ];
     };
 
@@ -74,7 +78,7 @@ in
         "compress=zstd"
         "space_cache"
         "commit=120"
-        "subvol=/test/home"
+        "subvol=test/home"
       ];
     };
 
@@ -86,7 +90,7 @@ in
         "compress=zstd"
         "space_cache"
         "commit=120"
-        "subvol=/test/var"
+        "subvol=test/var"
       ];
     };
 
@@ -98,7 +102,7 @@ in
         "compress=zstd"
         "space_cache"
         "commit=120"
-        "subvol=/test/nix"
+        "subvol=test/nix"
       ];
     };
 
