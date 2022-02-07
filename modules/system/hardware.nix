@@ -36,11 +36,17 @@ in
         "${root_crypt_name}" = {
           device = "${disk_path_prefix}/root";
           keyFile = "${root_crypt_name}_keyfile.bin";
+          fallbackToPassword = true;
+          # should improve performance on SSDs, needs Linux >= 5.9
+          bypassWorkqueues = true;
         };
 
         "${boot_crypt_name}" = {
           device = "${disk_path_prefix}/boot";
           keyFile = "${boot_crypt_name}_keyfile.bin";
+          fallbackToPassword = true;
+          # should improve performance on SSDs, needs Linux >= 5.9
+          bypassWorkqueues = true;
         };
       };
     };
@@ -104,6 +110,7 @@ in
         "space_cache"
         "commit=120"
       ];
+      depends = [ "/" ];
     };
 
     "/efi" = {
