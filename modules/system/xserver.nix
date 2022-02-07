@@ -20,15 +20,15 @@
 
       libinput.enable = true;
 
-      xrandrHeads = [
-        {
-          output = "HDMI-A-1";
-        }
-        {
-          output = "HDMI-A-0";
-          primary = true;
-        }
-      ];
+      # xrandrHeads = [
+      #   {
+      #     output = "HDMI-A-1";
+      #   }
+      #   {
+      #     output = "HDMI-A-0";
+      #     primary = true;
+      #   }
+      # ];
 
       layout = "us,de";
       xkbModel = "pc105";
