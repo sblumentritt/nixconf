@@ -23,6 +23,7 @@ in
         # with 'unusual large core.img' and 'btrfs doesn't support blocklists'
         device = "nodev";
 
+        extraConfig = ''GRUB_CMDLINE_LINUX="cryptdevice=LABEL=${root_crypt_name}"'';
         extraGrubInstallArgs = [ "--bootloader-id=test" ];
       };
 
@@ -110,7 +111,7 @@ in
         "space_cache"
         "commit=120"
       ];
-      depends = [ "/" ];
+      # depends = [ "/" ];
     };
 
     "/efi" = {

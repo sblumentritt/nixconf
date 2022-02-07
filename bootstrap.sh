@@ -92,7 +92,7 @@ format_and_mount() {
     cryptsetup luksFormat --type luks1 "${boot_partition}"
     # use LUKS2 for the root partition
     printf "\nSetup encryption for the 'root' partition:\n"
-    cryptsetup luksFormat "${root_partition}"
+    cryptsetup luksFormat --type luks2 --label "${ROOT_CRYPT_NAME}" "${root_partition}"
 
     # open the encrypted partitions which will be mapped to /dev/mapper/<name>
     printf "\nUnlocking 'boot' partition, passphrase has to be entered:\n"
