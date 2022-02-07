@@ -18,6 +18,7 @@ in
       efiSupport = true;
       enableCryptodisk = true;
       device = "${disk_path_prefix}/boot";
+      extraGrubInstallArgs = [ "--target=x86_64-efi" "--efi-directory=/efi" "--bootloader-id=test" ];
     };
 
     initrd = {
