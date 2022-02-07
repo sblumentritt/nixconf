@@ -41,7 +41,7 @@ in
 
       luks.reusePassphrases = true;
       luks.devices = {
-        "${root_crypt_name}" = {
+        "cryptroot" = {
           device = "${disk_by_uuid}/${root_outer_uuid}";
           # keyFile = "${root_crypt_name}_keyfile.bin";
           fallbackToPassword = true;
@@ -49,7 +49,7 @@ in
           bypassWorkqueues = true;
         };
 
-        "${boot_crypt_name}" = {
+        "cryptboot" = {
           device = "${disk_by_uuid}/${boot_outer_uuid}";
           # keyFile = "${boot_crypt_name}_keyfile.bin";
           fallbackToPassword = true;
