@@ -1,4 +1,7 @@
-pkgs: with pkgs; [
+{ config, pkgs, ... }:
+
+{
+  home.packages = with pkgs; [
     # from install.sh
     # base
     coreutils
@@ -140,3 +143,4 @@ pkgs: with pkgs; [
     maim
     picom
   ]
+}
