@@ -44,7 +44,7 @@
         isNormalUser = true;
 
         group = "developer";
-        extraGroups = [ "wheel", "networkmanager" "users" "video" "audio" "input"];
+        extraGroups = [ "wheel" "networkmanager" "users" "video" "audio" "input"];
       };
     };
   };

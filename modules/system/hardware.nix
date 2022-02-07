@@ -4,7 +4,7 @@ let
   root_crypt_name = "cryptroot";
   boot_crypt_name = "cryptboot";
 
-  disk_path_prefix = "/dev/disk/by-label"
+  disk_path_prefix = "/dev/disk/by-label";
 in
 {
   boot = {
