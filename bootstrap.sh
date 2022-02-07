@@ -90,9 +90,15 @@ format_and_mount() {
     # encrypt the boot partition with LUKS1 because GRUB cannot handle LUKS2 correctly
     printf "\nSetup encryption for the 'boot' partition:\n"
     cryptsetup luksFormat --type luks1 "${boot_partition}"
+    # use predefined UUID because luks1 doesn't support labels and we need to define
+    # the partition path in the hardware.nix somehow and this should be generic
+    # NOTE: for consistency every partition gets predefined UUIDs
+    cryptsetup luksUUID --uuid cf22708f-b675-4971-8884-9183ede13770 "${boot_partition}"
+
     # use LUKS2 for the root partition
     printf "\nSetup encryption for the 'root' partition:\n"
     cryptsetup luksFormat --type luks2 "${root_partition}"
+    cryptsetup luksUUID --uuid 9f5674cd-f11b-49c7-a975-ee981a0c56b5 "${root_partition}"
 
     # open the encrypted partitions which will be mapped to /dev/mapper/<name>
     printf "\nUnlocking 'boot' partition, passphrase has to be entered:\n"
@@ -101,11 +107,11 @@ format_and_mount() {
     cryptsetup open "${root_partition}" "${ROOT_CRYPT_NAME}"
 
     # format partitions
-    mkfs.fat -F32 -n "efi" "${efi_partition}"
+    mkfs.fat -F32 -n "efi" "${efi_partition}" # will not have an UUID change
     mkfs.btrfs -f -L "boot" "${boot_crypt_path}"
     btrfstune -M e0a63f79-df23-469f-9d64-05983cb32512 "${boot_crypt_path}"
     mkfs.btrfs -f -L "root" "${root_crypt_path}"
-    btrfstune -M f7cfbda7-2577-4d5f-9056-138b2e4209ed "${root_root_path}"
+    btrfstune -M f7cfbda7-2577-4d5f-9056-138b2e4209ed "${root_crypt_path}"
 
     # create subvolumes
     mount -t btrfs ${root_crypt_path} ${mount_point}

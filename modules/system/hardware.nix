@@ -1,10 +1,13 @@
 { config, pkgs, ... }:
 
 let
-  root_crypt_name = "cryptroot";
-  boot_crypt_name = "cryptboot";
+  boot_outer_uuid = "cf22708f-b675-4971-8884-9183ede13770";
+  boot_inner_uuid = "e0a63f79-df23-469f-9d64-05983cb32512";
 
-  disk_path_prefix = "/dev/disk/by-label";
+  root_outer_uuid = "9f5674cd-f11b-49c7-a975-ee981a0c56b5";
+  root_inner_uuid = "f7cfbda7-2577-4d5f-9056-138b2e4209ed";
+
+  disk_by_uuid = "/dev/disk/by-uuid";
 in
 {
   boot = {
@@ -39,7 +42,7 @@ in
       luks.reusePassphrases = true;
       luks.devices = {
         "${root_crypt_name}" = {
-          device = "${disk_path_prefix}/root";
+          device = "${disk_by_uuid}/${root_outer_uuid}";
           # keyFile = "${root_crypt_name}_keyfile.bin";
           fallbackToPassword = true;
           # should improve performance on SSDs, needs Linux >= 5.9
@@ -47,7 +50,7 @@ in
         };
 
         "${boot_crypt_name}" = {
-          device = "${disk_path_prefix}/boot";
+          device = "${disk_by_uuid}/${boot_outer_uuid}";
           # keyFile = "${boot_crypt_name}_keyfile.bin";
           fallbackToPassword = true;
           # should improve performance on SSDs, needs Linux >= 5.9
@@ -59,7 +62,7 @@ in
 
   fileSystems = {
     "/" = {
-      device = "/dev/mapper/${root_crypt_name}";
+      device = "${disk_by_uuid}/${root_inner_uuid}";
       fsType = "btrfs";
       options = [
         "noatime"
@@ -71,7 +74,7 @@ in
     };
 
     "/home" = {
-      device = "/dev/mapper/${root_crypt_name}";
+      device = "${disk_by_uuid}/${root_inner_uuid}";
       fsType = "btrfs";
       options = [
         "noatime"
@@ -83,7 +86,7 @@ in
     };
 
     "/var" = {
-      device = "/dev/mapper/${root_crypt_name}";
+      device = "${disk_by_uuid}/${root_inner_uuid}";
       fsType = "btrfs";
       options = [
         "noatime"
@@ -95,7 +98,7 @@ in
     };
 
     "/nix" = {
-      device = "/dev/mapper/${root_crypt_name}";
+      device = "${disk_by_uuid}/${root_inner_uuid}";
       fsType = "btrfs";
       options = [
         "noatime"
@@ -107,7 +110,7 @@ in
     };
 
     "/boot" = {
-      device = "/dev/mapper/${boot_crypt_name}";
+      device = "${disk_by_uuid}/${boot_inner_uuid}";
       fsType = "btrfs";
       options = [
         "noatime"
@@ -119,7 +122,7 @@ in
     };
 
     "/efi" = {
-      device = "${disk_path_prefix}/efi";
+      device = "/dev/disk/by-label/efi";
       fsType = "vfat";
     };
   };
