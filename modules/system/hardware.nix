@@ -11,14 +11,22 @@ in
     cleanTmpDir = true;
     kernelPackages = pkgs.linuxPackages_latest;
 
-    loader.grub = {
-      version = 2;
-      enable = true;
+    loader = {
+      grub = {
+        version = 2;
+        enable = true;
 
-      efiSupport = true;
-      enableCryptodisk = true;
-      device = "${disk_path_prefix}/boot";
-      extraGrubInstallArgs = [ "--target=x86_64-efi" "--efi-directory=/efi" "--bootloader-id=test" ];
+        efiSupport = true;
+        enableCryptodisk = true;
+
+        # needed as otherwise the legacy MBR is expected which is breaking the grub-install
+        # with 'unusual large core.img' and 'btrfs doesn't support blocklists'
+        device = "nodev";
+
+        extraGrubInstallArgs = [ "--bootloader-id=test" ];
+      };
+
+      efi.efiSysMountPoint = "/efi";
     };
 
     initrd = {
