@@ -29,7 +29,6 @@ in
         # with 'unusual large core.img' and 'btrfs doesn't support blocklists'
         device = "nodev";
 
-        # extraConfig = ''GRUB_CMDLINE_LINUX="cryptdevice=LABEL=${root_crypt_name}"'';
         extraGrubInstallArgs = [ "--bootloader-id=grub-test" ];
       };
 
@@ -43,7 +42,7 @@ in
       luks.devices = {
         "cryptroot" = {
           device = "${disk_by_uuid}/${root_outer_uuid}";
-          # keyFile = "${root_crypt_name}_keyfile.bin";
+          keyFile = "/cryptroot_keyfile.bin";
           fallbackToPassword = true;
           # should improve performance on SSDs, needs Linux >= 5.9
           bypassWorkqueues = true;
@@ -51,11 +50,16 @@ in
 
         "cryptboot" = {
           device = "${disk_by_uuid}/${boot_outer_uuid}";
-          # keyFile = "${boot_crypt_name}_keyfile.bin";
+          keyFile = "/cryptboot_keyfile.bin";
           fallbackToPassword = true;
           # should improve performance on SSDs, needs Linux >= 5.9
           bypassWorkqueues = true;
         };
+      };
+
+      secrets = {
+        "/cryptroot_keyfile.bin" = "/boot/initrd/cryptroot_keyfile.bin";
+        "/cryptboot_keyfile.bin" = "/boot/initrd/cryptboot_keyfile.bin";
       };
     };
   };
