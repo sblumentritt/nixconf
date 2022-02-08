@@ -2,25 +2,7 @@
 
 {
   home.packages = with pkgs; [
-    # from install.sh
-    # base
-    coreutils
-    # network
-    networkmanager
-    iproute2
-    iputils
-    # filesystem utils
-    dosfstools
-    e2fsprogs
-    sysfsutils
-    btrfs-progs
-    # compression
-    bzip2
-    gzip
-    gnutar
-    xz
-    lzop
-    # devel
+    # base devel
     gcc11
     perl
     autoconf
@@ -31,38 +13,18 @@
     gnumake
     gnupatch
     pkgconf
-    # utils
-    file
-    findutils
-    gawk
-    gnugrep
-    less
-    procps
-    gnused
-    usbutils
-    pciutils
-    util-linux
-    which
-    sudo
-    # misc
-    man
-    man-pages
-    nano
-
-    # from configure.sh
-    # base
-    openssh
-    wget
-    bash-completion
-    ntfs3g
-    libnotify
-    rsync
     # base extras
-    unzip
-    zip
     pipewire
     pulsemixer
     udiskie
+    # compression
+    bzip2
+    gzip
+    gnutar
+    xz
+    lzop
+    unzip
+    zip
     # llvm
     llvmPackages_13.llvm
     clang_13
@@ -115,29 +77,6 @@
     android-file-transfer
 
     # X11 specific packages
-    # xorg
-    xorg.xset
-    xorg.xrdb
-    xorg.xprop
-    xorg.xinit
-    xorg.xhost
-    xorg.xrandr
-    xorg.xinput
-    xorg.xmodmap
-    xorg.xsetroot
-    xorg.setxkbmap
-    xorg.xorgserver
-    # xcb
-    xcb-util-cursor
-    xorg.libxcb
-    xorg.xcbutil
-    xorg.xcbutilkeysyms
-    xorg.xcbutilrenderutil
-    xorg.xcbutilimage
-    xorg.xcbutilwm
-    # other
-    awesome
-    luajitPackages.vicious
     xclip
     xsecurelock
     maim

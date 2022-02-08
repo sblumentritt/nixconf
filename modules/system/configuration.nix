@@ -3,6 +3,9 @@
 {
   imports = [
     ./hardware.nix
+    ./network.nix
+    ./fonts.nix
+    ./users.nix
     ./xserver.nix
   ];
 
@@ -28,58 +31,70 @@
     };
   };
 
-  networking = {
-    hostName = "test";
-    networkmanager.enable = true;
-  };
+  time.timeZone = "Europe/Berlin";
 
-  users = {
-    defaultUserShell = pkgs.bashInteractive;
-
-    groups = {
-      developer = {
-        members = [ "sebastian" ];
-      };
-    };
-
-    users = {
-      sebastian = {
-        isNormalUser = true;
-
-        group = "developer";
-        extraGroups = [ "wheel" "networkmanager" "users" "video" "audio" "input"];
-      };
-    };
-  };
-
-  fonts = {
-    enableDefaultFonts = false;
-
-    fonts = with pkgs; [
-      lato
-      source-code-pro
-      source-han-code-jp
-      roboto
-      roboto-mono
-      noto-fonts-emoji
+  i18n = {
+    defaultLocale = "en_US.UTF-8";
+    supportedLocales = [
+      "en_US.UTF-8/UTF-8"
+      "en_US/ISO-8859-1"
+      "ja_JP.UTF-8/UTF-8"
+      "ja_JP.EUC-JP/EUC-JP"
+      "de_DE.UTF-8/UTF-8"
     ];
+  };
 
-    fontconfig = {
+  sound.enable = true;
+  services = {
+    pipewire = {
       enable = true;
-      defaultFonts = {
-        serif = [ "Lato" "Roboto" ];
-        sansSerif = [ "Lato" "Roboto" ];
-        monospace = [ "Source Code Pro" "Roboto Mono" ];
-        emoji = [ "Noto Color Emoji" ];
-      };
+      alsa.enable = true;
+      pulse.enable = true;
+    };
+
+    udev = {
+      extraRules = ''
+        SUBSYSTEM=="usb", DRIVER=="usb", ATTR{idProduct}=="4ee1", ATTR{idVendor}=="18d1", GROUP="developer", MODE="0660"
+      '';
     };
   };
 
   environment.systemPackages = with pkgs; [
-    coreutils
-    nano
+    # base
+    openssh
     wget
     curl
     git
+    bash-completion
+    libnotify
+    rsync
+    # network
+    networkmanager
+    iproute2
+    iputils
+    # filesystem utils
+    dosfstools
+    e2fsprogs
+    sysfsutils
+    btrfs-progs
+    ntfs3g
+    # utils
+    coreutils
+    file
+    findutils
+    gawk
+    gnugrep
+    less
+    procps
+    gnused
+    usbutils
+    pciutils
+    util-linux
+    which
+    sudo
+    # misc
+    man
+    man-pages
+    nano
   ];
 }

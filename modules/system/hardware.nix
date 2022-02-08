@@ -111,4 +111,8 @@ in
       fsType = "vfat";
     };
   };
+
+  hardware = {
+    opengl.enable = true;
+  };
 }

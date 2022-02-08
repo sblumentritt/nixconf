@@ -20,19 +20,42 @@
 
       libinput.enable = true;
 
-      # xrandrHeads = [
-      #   {
-      #     output = "HDMI-A-1";
-      #   }
-      #   {
-      #     output = "HDMI-A-0";
-      #     primary = true;
-      #   }
-      # ];
+      xrandrHeads = [
+        {
+          output = "HDMI-A-1";
+        }
+        {
+          output = "HDMI-A-0";
+          primary = true;
+        }
+      ];
 
       layout = "us,de";
       xkbModel = "pc105";
       xkbOptions = "grp:ctrls_toggle,caps:backspace,shift:both_capslock_cancel";
     };
   };
+
+  environment.systemPackages = with pkgs; [
+    # xorg
+    xorg.xset
+    xorg.xrdb
+    xorg.xprop
+    xorg.xinit
+    xorg.xhost
+    xorg.xrandr
+    xorg.xinput
+    xorg.xmodmap
+    xorg.xsetroot
+    xorg.setxkbmap
+    xorg.xorgserver
+    # xcb
+    xcb-util-cursor
+    xorg.libxcb
+    xorg.xcbutil
+    xorg.xcbutilkeysyms
+    xorg.xcbutilrenderutil
+    xorg.xcbutilimage
+    xorg.xcbutilwm
+  ];
 }
