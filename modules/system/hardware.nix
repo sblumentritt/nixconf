@@ -1,11 +1,10 @@
 { config, pkgs, ... }:
 
 let
-  boot_outer_uuid = "cf22708f-b675-4971-8884-9183ede13770";
-  boot_inner_uuid = "e0a63f79-df23-469f-9d64-05983cb32512";
-
-  root_outer_uuid = "9f5674cd-f11b-49c7-a975-ee981a0c56b5";
-  root_inner_uuid = "f7cfbda7-2577-4d5f-9056-138b2e4209ed";
+  efi_uuid = "8F7A-D91E";
+  boot_uuid = "e0a63f79-df23-469f-9d64-05983cb32512";
+  root_uuid = "f7cfbda7-2577-4d5f-9056-138b2e4209ed";
+  luksroot_uuid = "9f5674cd-f11b-49c7-a975-ee981a0c56b5";
 
   disk_by_uuid = "/dev/disk/by-uuid";
 in
@@ -15,7 +14,6 @@ in
     kernelParams = [ "boot.shell_on_fail" ];
 
     tmpOnTmpfs = true;
-    # cleanTmpDir = true;
 
     loader = {
       grub = {
@@ -38,83 +36,67 @@ in
     initrd = {
       supportedFilesystems = [ "btrfs" ];
 
-      luks.reusePassphrases = true;
       luks.devices = {
         "cryptroot" = {
-          device = "${disk_by_uuid}/${root_outer_uuid}";
-          keyFile = "/cryptroot_keyfile.bin";
-          fallbackToPassword = true;
+          device = "${disk_by_uuid}/${luksroot_uuid}";
           # should improve performance on SSDs, needs Linux >= 5.9
           bypassWorkqueues = true;
         };
-
-        "cryptboot" = {
-          device = "${disk_by_uuid}/${boot_outer_uuid}";
-          keyFile = "/cryptboot_keyfile.bin";
-          fallbackToPassword = true;
-          # should improve performance on SSDs, needs Linux >= 5.9
-          bypassWorkqueues = true;
-        };
-      };
-
-      secrets = {
-        "/cryptroot_keyfile.bin" = "/boot/initrd/cryptroot_keyfile.bin";
-        "/cryptboot_keyfile.bin" = "/boot/initrd/cryptboot_keyfile.bin";
       };
     };
   };
 
   fileSystems = {
     "/" = {
-      device = "${disk_by_uuid}/${root_inner_uuid}";
+      device = "${disk_by_uuid}/${root_uuid}";
       fsType = "btrfs";
       options = [
         "noatime"
         "compress=zstd"
         "space_cache"
         "commit=120"
-        "subvol=test/root"
+        "subvol=system/root"
       ];
     };
 
     "/home" = {
-      device = "${disk_by_uuid}/${root_inner_uuid}";
+      device = "${disk_by_uuid}/${root_uuid}";
       fsType = "btrfs";
       options = [
         "noatime"
         "compress=zstd"
         "space_cache"
         "commit=120"
-        "subvol=test/home"
+        "subvol=system/home"
       ];
     };
 
     "/var" = {
-      device = "${disk_by_uuid}/${root_inner_uuid}";
+      device = "${disk_by_uuid}/${root_uuid}";
       fsType = "btrfs";
       options = [
         "noatime"
         "compress=zstd"
         "space_cache"
         "commit=120"
-        "subvol=test/var"
+        "subvol=system/var"
       ];
     };
 
     "/nix" = {
-      device = "${disk_by_uuid}/${root_inner_uuid}";
+      device = "${disk_by_uuid}/${root_uuid}";
       fsType = "btrfs";
       options = [
         "noatime"
         "compress=zstd"
         "space_cache"
         "commit=120"
-        "subvol=test/nix"
+        "subvol=system/nix"
       ];
     };
 
     "/boot" = {
-      device = "${disk_by_uuid}/${boot_inner_uuid}";
+      device = "${disk_by_uuid}/${boot_uuid}";
       fsType = "btrfs";
       options = [
         "noatime"
@@ -122,11 +104,10 @@ in
         "space_cache"
         "commit=120"
       ];
-      # depends = [ "/" ];
     };
 
     "/efi" = {
-      device = "/dev/disk/by-label/efi";
+      device = "${disk_by_uuid}/${efi_uuid}";
       fsType = "vfat";
     };
   };

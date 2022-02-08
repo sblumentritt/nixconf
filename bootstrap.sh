@@ -1,12 +1,6 @@
 #!/usr/bin/env sh
 
-BOOT_DEVICE_PATH=""
-BOOT_CRYPT_NAME="cryptboot"
-BOOT_KEY_NAME="${BOOT_CRYPT_NAME}_keyfile.bin"
-
-ROOT_DEVICE_PATH=""
 ROOT_CRYPT_NAME="cryptroot"
-ROOT_KEY_NAME="${ROOT_CRYPT_NAME}_keyfile.bin"
 
 main() {
     # script should be run as root
@@ -18,14 +12,15 @@ main() {
     # show list of block devices for easier selection
     lsblk -a -o NAME,SIZE,MOUNTPOINT
 
-    printf "\nOn which drive do you want to install the system? "
-    read -r drive_path
+    printf "\nOn which drive name do you want to install the system? "
+    read -r drive_name
 
-    if [ -z "${drive_path}" ]; then
-        printf "\nDrive path needs to be set and can not be empty!\n" 1>&2
+    if [ -z "${drive_name}" ]; then
+        printf "\nDrive name needs to be set and can not be empty!\n" 1>&2
         exit 1
     fi
 
+    local drive_path="/dev/${drive_name}"
     local mount_point="/mnt"
 
     local color='\033[33m' # yellow/orange
@@ -69,60 +64,51 @@ format_and_mount() {
     local drive_path=$1
     local mount_point=$2
 
-    local boot_crypt_path="/dev/mapper/${BOOT_CRYPT_NAME}"
+    local efi_partition=""
+    local boot_partition=""
+    local root_partition=""
     local root_crypt_path="/dev/mapper/${ROOT_CRYPT_NAME}"
 
     lsblk "${drive_path}"
     # as it is unpredictable how the drives are named (sdxY,mmcblkxpY,nvme0nxpY)
     # -> https://wiki.archlinux.org/index.php/Device_file
     # it is much safer to just ask the user for the partition paths
-    printf "Please enter the 'efi' partition path: "
-    read -r efi_partition
+    printf "Please enter the 'efi' partition name: "
+    read -r efi_partition_name
+    efi_partition="/dev/${efi_partition_name}"
 
-    printf "Please enter the 'boot' partition path: "
-    read -r boot_partition
-    BOOT_DEVICE_PATH="${boot_partition}"
+    printf "Please enter the 'boot' partition name: "
+    read -r boot_partition_name
+    boot_partition="/dev/${boot_partition_name}"
 
-    printf "Please enter the 'root' partition path: "
-    read -r root_partition
-    ROOT_DEVICE_PATH="${root_partition}"
+    printf "Please enter the 'root' partition name: "
+    read -r root_partition_name
+    root_partition="/dev/${root_partition_name}"
 
-    # encrypt the boot partition with LUKS1 because GRUB cannot handle LUKS2 correctly
-    printf "\nSetup encryption for the 'boot' partition:\n"
-    cryptsetup luksFormat --type luks1 "${boot_partition}"
-    # use predefined UUID because luks1 doesn't support labels and we need to define
-    # the partition path in the hardware.nix somehow and this should be generic
-    # NOTE: for consistency every partition gets predefined UUIDs
-    cryptsetup luksUUID --uuid cf22708f-b675-4971-8884-9183ede13770 "${boot_partition}"
-
-    # use LUKS2 for the root partition
+    # encrypt the root partition with LUKS2
     printf "\nSetup encryption for the 'root' partition:\n"
-    cryptsetup luksFormat --type luks2 "${root_partition}"
-    cryptsetup luksUUID --uuid 9f5674cd-f11b-49c7-a975-ee981a0c56b5 "${root_partition}"
+    cryptsetup luksFormat --type luks2 \
+        --label "luksroot" --uuid 9f5674cd-f11b-49c7-a975-ee981a0c56b5 "${root_partition}"
 
-    # open the encrypted partitions which will be mapped to /dev/mapper/<name>
-    printf "\nUnlocking 'boot' partition, passphrase has to be entered:\n"
-    cryptsetup open "${boot_partition}" "${BOOT_CRYPT_NAME}"
+    # open the encrypted partition which will be mapped to /dev/mapper/<name>
     printf "\nUnlocking 'root' partition, passphrase has to be entered:\n"
     cryptsetup open "${root_partition}" "${ROOT_CRYPT_NAME}"
 
     # format partitions
-    mkfs.fat -F32 -n "efi" "${efi_partition}" # will not have an UUID change
-    mkfs.btrfs -f -L "boot" "${boot_crypt_path}"
-    btrfstune -M e0a63f79-df23-469f-9d64-05983cb32512 "${boot_crypt_path}"
-    mkfs.btrfs -f -L "root" "${root_crypt_path}"
-    btrfstune -M f7cfbda7-2577-4d5f-9056-138b2e4209ed "${root_crypt_path}"
+    mkfs.fat -F32 -n "efi" -i 8F7AD91E "${efi_partition}"
+    mkfs.btrfs -f -L "boot" -U e0a63f79-df23-469f-9d64-05983cb32512 "${boot_partition}"
+    mkfs.btrfs -f -L "root" -U f7cfbda7-2577-4d5f-9056-138b2e4209ed "${root_crypt_path}"
 
     # create subvolumes
     mount -t btrfs ${root_crypt_path} ${mount_point}
     (
         cd "${mount_point}" || exit
 
-        btrfs subvolume create "test"
-        btrfs subvolume create "test/root"
-        btrfs subvolume create "test/home"
-        btrfs subvolume create "test/var"
-        btrfs subvolume create "test/nix"
+        btrfs subvolume create "system"
+        btrfs subvolume create "system/root"
+        btrfs subvolume create "system/home"
+        btrfs subvolume create "system/var"
+        btrfs subvolume create "system/nix"
     )
 
     umount -R ${mount_point}
@@ -130,7 +116,7 @@ format_and_mount() {
     # mount subvolumes on correct positions with the correct options
     local common_mount_options="noatime,space_cache,commit=120"
 
-    mount -o "${common_mount_options},compress=zstd,subvol=test/root" \
+    mount -o "${common_mount_options},compress=zstd,subvol=system/root" \
         ${root_crypt_path} ${mount_point}
 
     # define variables to create folders needed for the mount
@@ -142,29 +128,16 @@ format_and_mount() {
     done
 
     mount ${efi_partition} ${mount_point}/efi
-    mount -o "${common_mount_options},compress=lzo" ${boot_crypt_path} ${mount_point}/boot
+    mount -o "${common_mount_options},compress=lzo" ${boot_partition} ${mount_point}/boot
 
-    mount -o "${common_mount_options},compress=zstd,subvol=test/home" \
+    mount -o "${common_mount_options},compress=zstd,subvol=system/home" \
         ${root_crypt_path} ${mount_point}/home
 
-    mount -o "${common_mount_options},compress=zstd,subvol=test/var" \
+    mount -o "${common_mount_options},compress=zstd,subvol=system/var" \
         ${root_crypt_path} ${mount_point}/var
 
-    mount -o "${common_mount_options},compress=zstd,subvol=test/nix" \
+    mount -o "${common_mount_options},compress=zstd,subvol=system/nix" \
         ${root_crypt_path} ${mount_point}/nix
-
-    # create keyfile to unlock the root partition automatically after unlocking the boot partition
-    dd bs=512 count=4 if=/dev/random of="${mount_point}/${ROOT_KEY_NAME}" iflag=fullblock
-    chmod 600 "${mount_point}/${ROOT_KEY_NAME}"
-    printf "\nAdding new keyfile to the 'root' partition, passphrase has to be entered:\n"
-    cryptsetup luksAddKey "${root_partition}" "${mount_point}/${ROOT_KEY_NAME}"
-
-    # create keyfile to unlock the boot partition when in the root partition
-    # best working way for me currently :)
-    dd bs=512 count=4 if=/dev/random of="${mount_point}/${BOOT_KEY_NAME}" iflag=fullblock
-    chmod 600 "${mount_point}/${BOOT_KEY_NAME}"
-    printf "\nAdding new keyfile to the 'boot' partition, passphrase has to be entered:\n"
-    cryptsetup luksAddKey "${boot_partition}" "${mount_point}/${BOOT_KEY_NAME}"
 }
 
 main "$@"
