@@ -8,6 +8,8 @@
   imports = [
     ./packages.nix
     ./xdg.nix
+    ./gtk.nix
+    ./services.nix
   ];
 
   # determines the home manager release that the configuration is compatible
