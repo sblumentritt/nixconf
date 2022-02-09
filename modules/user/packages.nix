@@ -3,11 +3,13 @@
 {
   home.packages = with pkgs; [
     # base devel
-    gcc11
+    # can not be installed when clang is also used because of 'c++' conflict
+    # gcc11
     perl
     autoconf
     automake
-    binutils
+    # can not be installed because of 'ld' conflict
+    # binutils
     fakeroot
     libtool
     gnumake
@@ -81,5 +83,5 @@
     xsecurelock
     maim
     picom
-  ]
+  ];
 }

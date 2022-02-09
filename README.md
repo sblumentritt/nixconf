@@ -1,23 +1,28 @@
 # nixconf - nix-based configurations
 
-This repository holds my personal configurations and scripts for Linux.
+An experiment to move to `NixOS` with `flakes` + `home-manager`. Sadly I ran
+into a lot problems which are still persistent:
 
-## Short time goals
+- unable to get encrypted `/boot` and keyfile decryption after Grub
+- `home-manager` service failes when `gtk.enable` is true
+  - got once xserver problem with bad file descriptor
+  - unit dconf.service not found
+- awesomewm module `vicious` not available when using `startx`
+  - need to pass `--search` with `/nix/store/` paths
+- awesomewm cannot get the `XDG_CONFIG_HOME` environment variable
+- normal paths cannot be used but hardcoding `/nix/store` is ugly
+- package collisions meaning development gets complicated
+  - e.g. `binutils-wrapper/ld` -> `gcc-wrapper/ld`
+  - e.g. `clang-wrapper/c++` -> `gcc-wrapper/ld`
 
-- get a little bit familiar with the `nix` language
-- move some of my existing configurations to `home-manager` and this repo
-  - be as simple and minimal as possible and only care about my non-work stuff
-  - only take care of my primary window manager which is `Awesome`
-- if useful rewrite some configs directly in `nix`
-- write configuration files for `NixOS`
-- try out everything on my personal hardware
+## Manual steps on booted iso
 
-## Long time goals
-
-- add `nix` config switches for work stuff and other window manager (e.g. `Sway`)
-- look into this `flake.nix` which I see in a lot of config repos
-- replace `Arch linux` on my work machine with `NixOS`
-- move more and more configurations to the `nix` language
+- call `sudo nix-env -iA nixos.git nixos.nixUnstable`
+  - `nixUnstable` is needed to use the `flake`
+- clone this repo
+- call `bootstrap.sh` as root via sudo
+- install system via `sudo nixos-install --root /mnt --flake <path-to-repo>/#test`
+- reboot and hope every worked :)
 
 ## License
 

@@ -57,6 +57,9 @@
         SUBSYSTEM=="usb", DRIVER=="usb", ATTR{idProduct}=="4ee1", ATTR{idVendor}=="18d1", GROUP="developer", MODE="0660"
       '';
     };
+
+    # seems to be needed for home-manager when having gtk.enable set to true
+    dbus.packages = [ pkgs.dconf ];
   };
 
   environment.systemPackages = with pkgs; [
