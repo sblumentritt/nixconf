@@ -19,7 +19,6 @@
       documents = "$HOME/documents";
     };
 
-    /*
     configFile = {
       # whole folder as symlink
       "alacritty".source = ../../config/alacritty;
@@ -38,14 +37,11 @@
       "awesome".source = ../../config/awesome;
       "X11".source = ../../config/X11;
     };
-    */
   };
 
   # not really XDG specific but is fits here the best
-  /*
   home.file = {
     ".profile".source = ../../config/.profile;
     ".bashrc".source = ../../config/.bashrc
   };
-  */
 }
