@@ -35,7 +35,12 @@
       "ranger/rifle.conf".source = ../../config/ranger/rifle.conf;
       # X11 specific
       "awesome".source = ../../config/awesome;
-      "X11".source = ../../config/X11;
+
+      "X11/xinitrc".text = ''
+        exec ${pkgs.awesome}/bin/awesome \
+            --search ${pkgs.luaPackages.vicious}/lib/lua/${pkgs.luaPackages.lua.luaversion} \
+            2> $HOME/.cache/awesome.log
+      '';
     };
   };
 
