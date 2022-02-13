@@ -34,6 +34,7 @@ in
     };
 
     initrd = {
+      kernelModules = [ "amdgpu" ];
       supportedFilesystems = [ "btrfs" ];
 
       luks.devices = {
@@ -113,6 +114,10 @@ in
   };
 
   hardware = {
-    opengl.enable = true;
+    opengl = {
+      enable = true;
+      driSupport = true;
+      extraPackages = [ pkgs.amdvlk ];
+    };
   };
 }
