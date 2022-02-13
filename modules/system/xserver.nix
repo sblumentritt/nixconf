@@ -15,7 +15,7 @@
 
       windowManager.awesome = {
         enable = true;
-        luaModules = [ pkgs.luajitPackages.vicious ];
+        luaModules = [ pkgs.luaPackages.vicious ];
       };
 
       libinput.enable = true;
