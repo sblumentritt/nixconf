@@ -1,15 +1,15 @@
 # nixconf - nix-based configurations
 
+> Currently no longer maintained. NixOS approach sounds nice but I don't really
+> like the `nix` language and some of my most used application are not up to
+> date. I still learned a few new/better things.
+
 An experiment to move to `NixOS` with `flakes` + `home-manager`. Sadly I ran
 into a lot problems which are still persistent:
 
 - unable to get encrypted `/boot` and keyfile decryption after Grub
-- `home-manager` service failes when `gtk.enable` is true
-  - got once xserver problem with bad file descriptor
-  - unit dconf.service not found
-- awesomewm module `vicious` not available when using `startx`
-  - need to pass `--search` with `/nix/store/` paths
-- awesomewm cannot get the `XDG_CONFIG_HOME` environment variable
+  - `boot.initrd.secrets` fails on creating temp dir
+  - same temp dir problem when trying to use `systemd-boot`
 - normal paths cannot be used but hardcoding `/nix/store` is ugly
 - package collisions meaning development gets complicated
   - e.g. `binutils-wrapper/ld` -> `gcc-wrapper/ld`
